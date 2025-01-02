@@ -14,15 +14,29 @@ import AppKit
 
 public struct MediaPickerView: UIViewControllerRepresentable {
     @Binding var selectedMedias: [Media]
+    let pickerFilters: [MediaType]
 
-    public init(selectedMedias: Binding<[Media]>) {
+    public init(selectedMedias: Binding<[Media]>, pickerFilters: [MediaType]) {
         self._selectedMedias = selectedMedias
+        self.pickerFilters = pickerFilters
     }
 
     public func makeUIViewController(context: Context) -> PHPickerViewController {
         var configuration = PHPickerConfiguration()
         configuration.selectionLimit = 0 // 0 for unlimited selection
-        configuration.filter = .any(of: [.images, .videos]) // Allows picking images and videos
+
+        let pickerFilters = pickerFilters.map { mediaType in
+            switch mediaType {
+            case .image:
+                PHPickerFilter.images
+            case .video:
+                PHPickerFilter.videos
+            case .file:
+                PHPickerFilter.images
+            }
+        }
+
+        configuration.filter = .any(of: pickerFilters) // Allows picking images and videos
 
         let picker = PHPickerViewController(configuration: configuration)
         picker.delegate = context.coordinator
