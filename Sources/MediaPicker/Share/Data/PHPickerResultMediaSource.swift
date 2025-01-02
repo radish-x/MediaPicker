@@ -101,7 +101,6 @@ extension MoviePickerSource: @preconcurrency MediaSource {
         guard let url = try await getURL() else {
             throw TransferError.importFailed
         }
-        let asset = AVURLAsset(url: url)
 
         let size = try await withCheckedContinuation { continuation in
             getVideoSize(from: url, completion: { size in

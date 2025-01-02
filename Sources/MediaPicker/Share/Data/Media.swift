@@ -1,5 +1,5 @@
 //
-//  Created by Alex.M on 31.05.2022.
+//  Created by luolingfeng on 12/29/24.
 //
 
 import Combine
@@ -22,7 +22,7 @@ public enum MediaType {
 }
 
 @MainActor
-public struct Media: Identifiable, Equatable {
+public struct Media: Identifiable, Equatable, Sendable {
     public let id = UUID()
     let source: MediaSource
 
