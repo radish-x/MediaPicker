@@ -9,7 +9,7 @@ import SwiftUI
 
 #if canImport(UIKit)
 
-struct FilePicker: UIViewControllerRepresentable {
+struct FilePickerView: UIViewControllerRepresentable {
     @Binding var selectedFiles: [URL]
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
@@ -26,9 +26,9 @@ struct FilePicker: UIViewControllerRepresentable {
     }
 
     class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let parent: FilePicker
+        let parent: FilePickerView
 
-        init(_ parent: FilePicker) {
+        init(_ parent: FilePickerView) {
             self.parent = parent
         }
 

@@ -12,10 +12,14 @@ import AppKit
 
 #endif
 
-struct MediaPicker: UIViewControllerRepresentable {
+public struct MediaPickerView: UIViewControllerRepresentable {
     @Binding var selectedMedias: [Media]
 
-    func makeUIViewController(context: Context) -> PHPickerViewController {
+    public init(selectedMedias: Binding<[Media]>) {
+        self._selectedMedias = selectedMedias
+    }
+
+    public func makeUIViewController(context: Context) -> PHPickerViewController {
         var configuration = PHPickerConfiguration()
         configuration.selectionLimit = 0 // 0 for unlimited selection
         configuration.filter = .any(of: [.images, .videos]) // Allows picking images and videos
@@ -25,20 +29,20 @@ struct MediaPicker: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    public func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
 
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let parent: MediaPicker
+    public class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: MediaPickerView
 
-        init(_ parent: MediaPicker) {
+        init(_ parent: MediaPickerView) {
             self.parent = parent
         }
 
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.dismiss(animated: true)
 
             parent.selectedMedias = results.map { phpickerResult in

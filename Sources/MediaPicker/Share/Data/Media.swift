@@ -21,11 +21,12 @@ public enum MediaType {
     case file
 }
 
+@MainActor
 public struct Media: Identifiable, Equatable {
-    public var id = UUID()
+    public let id = UUID()
     let source: MediaSource
 
-    public static func == (lhs: Media, rhs: Media) -> Bool {
+    public nonisolated static func == (lhs: Media, rhs: Media) -> Bool {
         lhs.id == rhs.id
     }
 }

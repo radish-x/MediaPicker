@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 protocol MediaSource {
     var mediaType: MediaType? { get }
 
