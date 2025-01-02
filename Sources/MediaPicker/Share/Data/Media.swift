@@ -36,6 +36,14 @@ public extension Media {
         source.mediaType ?? .file
     }
 
+    func getSize() async throws -> CGSize? {
+        return try await source.getSize()
+    }
+
+    func getBytes() async throws -> Int {
+        return try await source.getBytes()
+    }
+
     func duration() async throws -> CGFloat? {
         return try await source.duration()
     }
