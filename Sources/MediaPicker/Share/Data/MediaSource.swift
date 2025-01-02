@@ -17,4 +17,8 @@ protocol MediaSource {
 
     func getData() async throws -> Data?
     func getThumbnailData() async throws -> Data?
+
+    func getSize() async throws -> CGSize?
+
+    func getBytes() async throws -> Int
 }

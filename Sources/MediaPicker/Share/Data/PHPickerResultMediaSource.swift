@@ -39,6 +39,14 @@ extension PHPickerResultMediaSource: @preconcurrency MediaSource {
         return delegate?.mediaType
     }
 
+    func getSize() async throws -> CGSize? {
+        return try await delegate?.getSize()
+    }
+
+    func getBytes() async throws -> Int {
+        return try await delegate?.getBytes() ?? 0
+    }
+
     func duration() async throws -> CGFloat? {
         return try await delegate?.duration()
     }
@@ -66,6 +74,7 @@ class MoviePickerSource {
     private var loadingTask: Task<URL?, Error>? // Tracks the ongoing loading task
 
     private var url: URL?
+    private var videoSize: CGSize?
 
     init(phpPickerResult: PHPickerResult, url: URL? = nil) {
         self.phpPickerResult = phpPickerResult
@@ -82,6 +91,70 @@ extension MoviePickerSource: @preconcurrency MediaSource {
         } else {
             return .file
         }
+    }
+
+    func getSize() async throws -> CGSize? {
+        if let videoSize = videoSize {
+            return videoSize
+        }
+
+        guard let url = try await getURL() else {
+            throw TransferError.importFailed
+        }
+        let asset = AVURLAsset(url: url)
+
+        let size = try await withCheckedContinuation { continuation in
+            getVideoSize(from: url, completion: { size in
+                continuation.resume(returning: size)
+            })
+        }
+
+//        let tracks = try await asset.load(.tracks)
+//        guard let videoTrack = tracks.first(where: { $0.mediaType == .video }) else {
+//            throw TransferError.importFailed
+//        }
+//        let size = try await videoTrack.load(.naturalSize)
+        videoSize = size
+        return size
+    }
+
+    func getVideoSize(from url: URL, completion: @escaping (CGSize?) -> Void) {
+        // 创建 AVURLAsset
+        let asset = AVURLAsset(url: url)
+
+        // 异步加载视频轨道
+        asset.loadValuesAsynchronously(forKeys: ["tracks"]) {
+            var error: NSError?
+            let status = asset.statusOfValue(forKey: "tracks", error: &error)
+
+            DispatchQueue.main.async {
+                if status == .loaded {
+                    // 获取视频轨道
+                    if let track = asset.tracks(withMediaType: .video).first {
+                        // 获取视频尺寸
+                        let size = track.naturalSize
+                        completion(size)
+                    } else {
+                        print("No video track found")
+                        completion(nil)
+                    }
+                } else {
+                    print("Failed to load tracks: \(error?.localizedDescription ?? "Unknown error")")
+                    completion(nil)
+                }
+            }
+        }
+    }
+
+    func getBytes() async throws -> Int {
+        guard let url = try await getURL() else {
+            throw TransferError.importFailed
+        }
+        let resourceValues = try url.resourceValues(forKeys: [.fileSizeKey])
+        guard let fileSize = resourceValues.fileSize else {
+            throw TransferError.importFailed
+        }
+        return fileSize
     }
 
     func duration() async throws -> CGFloat? {
@@ -183,13 +256,52 @@ class PhotoPickerSource {
     private var url: URL?
     private var data: Data?
 
+    private var imageSize: CGSize?
+
     init(phpPickerResult: PHPickerResult, url: URL? = nil) {
         self.phpPickerResult = phpPickerResult
         self.url = url
     }
 }
 
-extension PhotoPickerSource: @preconcurrency MediaSource {
+extension PhotoPickerSource: MediaSource {
+    func getSize() async throws -> CGSize? {
+        if let imageSize = imageSize {
+            return imageSize
+        }
+
+        // Get the image data
+        guard let data = try await getData() else {
+            throw TransferError.importFailed // Make sure data exists
+        }
+
+        #if canImport(UIKit)
+            guard let uiImage = UIImage(data: data) else {
+                throw TransferError.importFailed
+            }
+
+            imageSize = uiImage.size
+
+            return uiImage.size
+        #elseif canImport(AppKit)
+            guard let nsImage = NSImage(data: data) else {
+                throw TransferError.importFailed
+            }
+
+            imageSize = nsImage.size
+            return nsImage.size
+        #endif
+    }
+
+    func getBytes() async throws -> Int {
+        // Get the image data
+        guard let data = try await getData() else {
+            throw TransferError.importFailed // Make sure data exists
+        }
+
+        return data.count
+    }
+
     var mediaType: MediaType? {
         if phpPickerResult.itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
             return .image
