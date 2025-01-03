@@ -15,7 +15,7 @@ import SwiftUICore
 
 #endif
 
-public enum MediaType {
+public enum MediaType: Sendable {
     case image
     case video
     case file
