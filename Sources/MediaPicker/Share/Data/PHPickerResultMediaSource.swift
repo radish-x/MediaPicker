@@ -35,35 +35,35 @@ public class PHPickerResultMediaSource {
 }
 
 extension PHPickerResultMediaSource: @preconcurrency MediaSource {
-    var mediaType: MediaType? {
+    public var mediaType: MediaType? {
         return delegate?.mediaType
     }
 
-    func getSize() async throws -> CGSize? {
+    public func getSize() async throws -> CGSize? {
         return try await delegate?.getSize()
     }
 
-    func getBytes() async throws -> Int {
+    public func getBytes() async throws -> Int {
         return try await delegate?.getBytes() ?? 0
     }
 
-    func duration() async throws -> CGFloat? {
+    public func duration() async throws -> CGFloat? {
         return try await delegate?.duration()
     }
 
-    func getURL() async throws -> URL? {
+    public func getURL() async throws -> URL? {
         return try await delegate?.getURL()
     }
 
-    func getThumbnailURL() async throws -> URL? {
+    public  func getThumbnailURL() async throws -> URL? {
         return try await delegate?.getThumbnailURL()
     }
 
-    func getData() async throws -> Data? {
+    public  func getData() async throws -> Data? {
         return try await delegate?.getData()
     }
 
-    func getThumbnailData() async throws -> Data? {
+    public func getThumbnailData() async throws -> Data? {
         return try await delegate?.getThumbnailData()
     }
 }

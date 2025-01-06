@@ -23,7 +23,7 @@ public struct URLMediaSource: MediaSource {
         self.url = url
     }
     
-    var mediaType: MediaType? {
+    public var mediaType: MediaType? {
         if url.isVideoFile {
             return .video
         } else if url.isImageFile {
@@ -33,31 +33,31 @@ public struct URLMediaSource: MediaSource {
         }
     }
     
-    func duration() async throws -> CGFloat? {
+    public func duration() async throws -> CGFloat? {
         guard url.isVideoFile else { return nil }
         return CMTimeGetSeconds(AVURLAsset(url: url).duration)
     }
     
-    func getURL() async throws -> URL? {
+    public func getURL() async throws -> URL? {
         return url
     }
     
-    func getThumbnailURL() async throws -> URL? {
+    public func getThumbnailURL() async throws -> URL? {
         guard url.isVideoFile else { return url }
         
         return try await url.getThumbnailURL()
     }
     
-    func getData() async throws -> Data? {
+    public func getData() async throws -> Data? {
         return try? Data(contentsOf: url)
     }
     
-    func getThumbnailData() async throws -> Data? {
+    public func getThumbnailData() async throws -> Data? {
         guard url.isVideoFile else { return try? Data(contentsOf: url) }
         return await url.getThumbnailData()
     }
     
-    func getSize() async throws -> CGSize? {
+    public func getSize() async throws -> CGSize? {
         if url.isVideoFile {
             return try await url.getVideoSizeAsync()
         } else if url.isImageFile {
@@ -74,7 +74,7 @@ public struct URLMediaSource: MediaSource {
         }
     }
     
-    func getBytes() async throws -> Int {
+    public func getBytes() async throws -> Int {
         let resourceValues = try url.resourceValues(forKeys: [.fileSizeKey])
         return resourceValues.fileSize ?? 0 // File size in bytes
     }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 @MainActor
-protocol MediaSource {
+public protocol MediaSource {
     var mediaType: MediaType? { get }
 
     func duration() async throws -> CGFloat?
