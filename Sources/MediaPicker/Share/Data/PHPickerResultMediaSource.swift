@@ -103,7 +103,7 @@ extension MoviePickerSource: @preconcurrency MediaSource {
         }
 
         let size = try await withCheckedContinuation { continuation in
-            getVideoSize(from: url, completion: { size in
+            url.getVideoSize(completion: { size in
                 continuation.resume(returning: size)
             })
         }
@@ -115,34 +115,6 @@ extension MoviePickerSource: @preconcurrency MediaSource {
 //        let size = try await videoTrack.load(.naturalSize)
         videoSize = size
         return size
-    }
-
-    func getVideoSize(from url: URL, completion: @escaping (CGSize?) -> Void) {
-        // 创建 AVURLAsset
-        let asset = AVURLAsset(url: url)
-
-        // 异步加载视频轨道
-        asset.loadValuesAsynchronously(forKeys: ["tracks"]) {
-            var error: NSError?
-            let status = asset.statusOfValue(forKey: "tracks", error: &error)
-
-            DispatchQueue.main.async {
-                if status == .loaded {
-                    // 获取视频轨道
-                    if let track = asset.tracks(withMediaType: .video).first {
-                        // 获取视频尺寸
-                        let size = track.naturalSize
-                        completion(size)
-                    } else {
-                        print("No video track found")
-                        completion(nil)
-                    }
-                } else {
-                    print("Failed to load tracks: \(error?.localizedDescription ?? "Unknown error")")
-                    completion(nil)
-                }
-            }
-        }
     }
 
     func getBytes() async throws -> Int {
