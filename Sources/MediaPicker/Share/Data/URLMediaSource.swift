@@ -16,7 +16,7 @@ import AppKit
 
 #endif
 
-struct URLMediaSource: MediaSource {
+public struct URLMediaSource: MediaSource {
     let url: URL
     
     var mediaType: MediaType? {

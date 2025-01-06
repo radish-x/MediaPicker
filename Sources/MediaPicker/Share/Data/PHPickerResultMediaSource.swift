@@ -16,7 +16,7 @@ import PhotosUI
 #endif
 
 @MainActor
-class PHPickerResultMediaSource {
+public class PHPickerResultMediaSource {
     let phpPickerResult: PHPickerResult
 
     var delegate: MediaSource? {
