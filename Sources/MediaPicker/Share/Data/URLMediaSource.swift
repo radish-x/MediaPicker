@@ -19,6 +19,10 @@ import AppKit
 public struct URLMediaSource: MediaSource {
     let url: URL
     
+    public init(url: URL) {
+        self.url = url
+    }
+    
     var mediaType: MediaType? {
         if url.isVideoFile {
             return .video
