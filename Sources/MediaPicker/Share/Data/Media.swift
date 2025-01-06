@@ -26,6 +26,10 @@ public struct Media: Identifiable, Equatable, Sendable {
     public let id = UUID()
     let source: MediaSource
 
+    public init(source: MediaSource) {
+        self.source = source
+    }
+
     public nonisolated static func == (lhs: Media, rhs: Media) -> Bool {
         lhs.id == rhs.id
     }
