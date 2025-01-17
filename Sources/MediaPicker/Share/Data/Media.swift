@@ -29,6 +29,10 @@ public struct Media: Identifiable, Equatable, Sendable {
     public init(source: MediaSource) {
         self.source = source
     }
+    
+    public init(url: URL) {
+        self.source = URLMediaSource(url: url)
+    }
 
     public nonisolated static func == (lhs: Media, rhs: Media) -> Bool {
         lhs.id == rhs.id
